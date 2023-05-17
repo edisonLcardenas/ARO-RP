@@ -1,0 +1,13 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+metadata:
+  name: upgradeconfig
+tests:
+- name: upgradeconfig-tests
+  template: ../../gktemplates/aro-deny-upgradeconfig.yaml
+  constraint: ../../gkconstraints-test/aro-upgradeconfig.yaml
+  cases:
+  - name: upgradeconfig-allowed
+    object: gator-test/managed-upgrade-operator.yaml
+    assertions:
+    - violations: no
