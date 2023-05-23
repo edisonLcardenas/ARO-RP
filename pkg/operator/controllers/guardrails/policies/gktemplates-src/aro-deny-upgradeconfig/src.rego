@@ -14,7 +14,7 @@ violation[{"msg": msg}] {
 	## ALLOW EDITING
 
 	## If regular user and 
-	## HAS cloud.openshift.com entry in openshift-config/pull-secret Secret
+	## HAS cloud.openshift.com entry (`source: OCM` indicates pull-secret exists) in openshift-config/pull-secret Secret
 	## NOT ALLOWED
 	config_data := input.review.data["config.yaml"]
 	regex.match("source: OCM", config_data)

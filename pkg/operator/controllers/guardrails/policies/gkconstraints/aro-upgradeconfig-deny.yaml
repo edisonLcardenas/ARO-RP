@@ -6,6 +6,6 @@ spec:
   enforcementAction: {{.Enforcement}}
   match:
     kinds:
-      - apiGroups: [""]
+      - apiGroups: ["upgrade.managed.openshift.io"]
         kinds: ["ConfigMap"]
         namespaces: ["openshift-managed-upgrade-operator"]

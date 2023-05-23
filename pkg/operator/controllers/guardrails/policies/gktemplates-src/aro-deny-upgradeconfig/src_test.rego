@@ -1,88 +1,101 @@
 package arodenyupgradeconfig
 
-test_input_allowed_regularuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("basic-user","test","UPDATE") }
+test_input_allowed_regular_user_upgradeconfig {
+  input := { "review": fake_ocm_upgradeconfig("regular-user","test","UPDATE") }
   results := violation with input as input
   count(results) == 0
 }
 
-test_input_disallowed_regularuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("basic-user","test","UPDATE") }
+test_input_disallowed_regular_user_upgradeconfig {
+  input := { "review": fake_ocm_upgradeconfig("regular-user","test","UPDATE") }
   results := violation with input as input
   count(results) == 1
 }
 
-test_input_allowed_systemuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("system:admin","test","UPDATE") }
+test_input_allowed_system_user_upgradeconfig {
+  input := { "review": fake_ocm_upgradeconfig("system:admin","test","UPDATE") }
   results := violation with input as input
   count(results) == 0
 }
 
-test_delete_allowed_regularuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("basic-user","test","DELETE") }
+test_delete_allowed_regular_user_upgradeconfig {
+  input := { "review": fake_upgradeconfig("regular-user","test","DELETE") }
   results := violation with input as input
   count(results) == 0
 }
 
-test_delete_disallowed_regularuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("basic-user","test","DELETE") }
+test_delete_disallowed_regular_user_upgradeconfig {
+  input := { "review": fake_upgradeconfig("regular-user","test","DELETE") }
   results := violation with input as input
   count(results) == 1
 }
 
-test_delete_allowed_systemuser_upgradeconfig {
+test_delete_allowed_system_user_upgradeconfig {
   input := { "review": fake_upgradeconfig("system:admin","test","DELETE") }
   results := violation with input as input
   count(results) == 0
 }
 
-test_create_allowed_regularuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("basic-user","test","CREATE") }
+test_create_allowed_regular_user_upgradeconfig {
+  input := { "review": fake_upgradeconfig("regular-user","test","CREATE") }
   results := violation with input as input
   count(results) == 0
 }
 
-test_create_disallowed_regularuser_upgradeconfig {
-  input := { "review": fake_upgradeconfig("basic-user","test","CREATE") }
+test_create_disallowed_regular_user_upgradeconfig {
+  input := { "review": fake_upgradeconfig("regular-user","test","CREATE") }
   results := violation with input as input
   count(results) == 1
 }
 
-test_create_allowed_systemuser_upgradeconfig {
+test_create_allowed_system_user_upgradeconfig {
   input := { "review": fake_upgradeconfig("system:admin","test","CREATE") }
   results := violation with input as input
   count(results) == 0
 }
 
-fake_upgradeconfig(group, username, operation) = output {
+fake_ocm_upgradeconfig(group, username, operation) = output {
   output = {
-    "object": {
-        "apiVersion": "upgrade.managed.openshift.io/v1alpha1",
-        "kind": "UpgradeConfig",
-        "metadata": {
-            "creationTimestamp": "2024-05-18T01:01:27Z",
-            "generation": 2,
-            "name": "managed-upgrade-config",
-            "namespace": "openshift-managed-upgrade-operator",
-            "resourceVersion": "60055",
-            "uid": "236240df-2438-4afb-b9de-893f24a446b7"
-        },
-        "spec": {
-            "PDBForceDrainTimeout": 60,
-            "desired": {
-                "channel": "stable-4.10",
-                "version": "4.10.55"
-            },
-            "type": "ARO",
-            "upgradeAt": "2023-05-18T07:56:00Z"
-        },
-    },
-    "operation": operation,
-    "userInfo":{
-       "groups":[
-          group
-       ],
-       "username": username # "system:admin"
+    {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "configManager:\n  source: OCM\n  ocmBaseUrl: https://api.openshift.com\n  \n  watchInterval: 60\nmaintenance:\n  controlPlaneTime: 90\n  ignoredAlerts:\n    controlPlaneCriticals:\n    - ClusterOperatorDown\n    - ClusterOperatorDegraded\nupgradeType: ARO\nupgradeWindow:\n  delayTrigger: 30\n  timeOut: 120\nnodeDrain:\n  timeOut: 45\n  expectedNodeDrainTime: 8\nscale:\n  timeOut: 30\nhealthCheck:\n  ignoredCriticals:\n  - PrometheusRuleFailures\n  - CannotRetrieveUpdates\n  - FluentdNodeDown\n  ignoredNamespaces:\n  - openshift-logging\n  - openshift-redhat-marketplace\n  - openshift-operators\n  - openshift-user-workload-monitoring\n  - openshift-pipelines\n  - openshift-azure-logging\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "creationTimestamp": "2023-05-25T09:48:14Z",
+        "name": "managed-upgrade-operator-config-old",
+        "namespace": "openshift-managed-upgrade-operator",
+        "ownerReferences": [
+          {
+            "apiVersion": "aro.openshift.io/v1alpha1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Cluster",
+            "name": "cluster",
+            "uid": "c89909e5-3f29-482e-8f8e-50851fc85459"
+          }
+        ],
+        "resourceVersion": "404152",
+        "uid": "2e349cc1-034e-4f8b-9377-34ba9620c418"
+      },
+      "operation": operation,
+      "options": null,
+      "requestKind": {
+        "group": "",
+        "kind": "ConfigMap",
+        "version": "v1"
+      },
+      "resource": {
+        "group": "",
+        "resource": "ConfigMap",
+        "version": "v1"
+      },
+      "uid": "0dc3dee4-fed8-42c8-a089-a6d36477c1c4",
+      "userInfo": {
+        "uid": "5b7bbd66-0563-4c18-b66b-2771a47959f9",
+        "username": username
+      }
     }
   }
 }
